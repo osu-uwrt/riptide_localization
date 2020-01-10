@@ -39,4 +39,6 @@ imu0_config: [false, false, false,
 
 imu0_remove_gravitational_acceleration: true
 
+gravitational_acceleration: 9.8
+
 
