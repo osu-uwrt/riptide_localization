@@ -1,8 +1,9 @@
 <launch>
     <arg name="namespace" default="puddles" doc="Namespace of the vehicle"/>
-    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true" ns="$(arg namespace)">
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node" ns="$(arg namespace)">
         <rosparam command="load" file="$(find riptide_navigation)/params/ekf_config.yaml" />
         <param name="base_link_frame" value="$(arg namespace)/base_link" />
+        <param name="reset_on_time_jump" value="true" />
     </node>
     <node pkg="tf" type="static_transform_publisher" name="odom_to_world_broadcaster" args="0 0 0 0 0 0 1 world odom 100" />
 </launch>
