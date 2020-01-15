@@ -26,6 +26,16 @@ odom_frame: odom            # Defaults to "odom" if unspecified
 base_link_frame: base_link  # Defaults to "base_link" if unspecified
 world_frame: odom           # Defaults to the value of odom_frame if unspecified
 
+# Config says whether to incorporate sensor data
+# Array is...
+# X  Y  Z
+# R  P  Y
+# vX vY vZ
+# vR vP vY
+# aX aY aZ
+
+# IMU already has kalman filter. Angular vel not included 
+# because we dont want it recomputed into orientation
 imu0: imu/data
 imu0_config: [false, false, false,
               true,  true,  true,
@@ -34,7 +44,6 @@ imu0_config: [false, false, false,
               true,  true,  true]
 
 imu0_remove_gravitational_acceleration: true
-
 gravitational_acceleration: 9.81627
 
 twist0: dvl_twist
@@ -51,6 +60,9 @@ pose0_config: [false, false, true,
                false, false, false,
                false, false, false]
 
+
+# This covariance was not calculated. This is just default with low XYZ noise
+# Low XYZ noise keeps output covariance low and depth sensor is not favored over dvl
 process_noise_covariance: [5e-7, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
                            0,    5e-7, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
                            0,    0,    5e-7, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
