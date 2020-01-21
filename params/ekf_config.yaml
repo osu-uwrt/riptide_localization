@@ -34,8 +34,6 @@ world_frame: odom           # Defaults to the value of odom_frame if unspecified
 # vR vP vY
 # aX aY aZ
 
-# IMU already has kalman filter. Angular vel not included 
-# because we dont want it recomputed into orientation
 imu0: imu/data
 imu0_config: [false, false, false,
               true,  true,  true,
@@ -43,6 +41,7 @@ imu0_config: [false, false, false,
               true,  true,  true,
               true,  true,  true]
 
+imu0_queue_size: 4
 imu0_remove_gravitational_acceleration: true
 gravitational_acceleration: 9.81627
 
