@@ -1,10 +1,14 @@
 <launch>
     <arg name="namespace" default="puddles" doc="Namespace of the vehicle"/>
-    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node" ns="$(arg namespace)">
-        <rosparam command="load" file="$(find riptide_navigation)/params/ekf_config.yaml" />
-        <param name="base_link_frame" value="$(arg namespace)/base_link" />
-        <param name="reset_on_time_jump" value="true" />
-    </node>
+    <group ns="$(arg namespace)">
+        <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node">
+            <rosparam command="load" file="$(find riptide_navigation)/params/ekf_config.yaml" />
+            <param name="base_link_frame" value="$(arg namespace)/base_link" />
+            <param name="reset_on_time_jump" value="true" />
+        </node>
+        <node pkg="riptide_navigation" name="dvl_converter" type="dvl_converter.py" />
+        <node pkg="riptide_navigation" name="depth_converter" type="depth_converter.py" />
+    </group>
 
     <!-- Publish world and odom as same thing until we get SLAM -->
     <!-- This is here so we can compare ground truth from sim to odom -->
