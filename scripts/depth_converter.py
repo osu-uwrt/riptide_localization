@@ -18,6 +18,7 @@ class depthConverter():
         self.namespace = rospy.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.b2pVector= None
 
     def depthCb(self, msg):
         try:
@@ -25,16 +26,17 @@ class depthConverter():
             b2oOrientation = self.tfBuffer.lookup_transform('odom', self.namespace+'base_link', rospy.Time()).transform.rotation
             b2oMatrix = quaternion_matrix([b2oOrientation.x, b2oOrientation.y, b2oOrientation.z, b2oOrientation.w])[:3,:3]
 
-            # Offset to pressure sensor
-            pressureOffset = self.tfBuffer.lookup_transform(self.namespace+'pressure_link', self.namespace+'base_link', rospy.Time()).transform.translation
-            b2pVector = [pressureOffset.x, pressureOffset.y, pressureOffset.z]
+            if self.b2pVector is None:
+                # Offset to pressure sensor
+                pressureOffset = self.tfBuffer.lookup_transform(self.namespace+'pressure_link', self.namespace+'base_link', rospy.Time()).transform.translation
+                self.b2pVector = [pressureOffset.x, pressureOffset.y, pressureOffset.z]
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
             rospy.loginfo(ex)
             return
 
         # Rotate pressure sensor offset into odom frame and get additional depth from offset
         # TODO: Calculate uncertainty of this measure
-        addedDepth = np.dot(b2oMatrix, b2pVector)[2]
+        addedDepth = np.dot(b2oMatrix, self.b2pVector)[2]
 
         # Publish z offset from odom to base_link (depth)
         outMsg = PoseWithCovarianceStamped()
