@@ -43,7 +43,7 @@ imu0_config: [false, false, false,
 
 imu0_queue_size: 4
 imu0_remove_gravitational_acceleration: true
-gravitational_acceleration: 9.81627
+gravitational_acceleration: 9.81604
 
 twist0: dvl/twist
 twist0_config: [false, false, false,
