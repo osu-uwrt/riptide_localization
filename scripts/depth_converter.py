@@ -43,12 +43,7 @@ class depthConverter():
         outMsg.header = msg.header
         outMsg.header.frame_id = "odom"
         outMsg.pose.pose.position.z = msg.depth + addedDepth
-        outMsg.pose.covariance[0] = -1
-        outMsg.pose.covariance[7] = -1
         outMsg.pose.covariance[14] = msg.variance
-        outMsg.pose.covariance[21] = -1
-        outMsg.pose.covariance[28] = -1
-        outMsg.pose.covariance[35] = -1
         self.pub.publish(outMsg)
 
 if __name__ == '__main__':
