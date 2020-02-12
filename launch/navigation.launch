@@ -12,7 +12,7 @@
         <!-- A joint state publisher -->
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen" />
 
-        <!-- Publish robot model for ROS -->
+        <!-- Publish robot model for Sensor locations -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
     </group>
 
