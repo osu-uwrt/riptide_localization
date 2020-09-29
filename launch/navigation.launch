@@ -12,7 +12,9 @@
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen" />
 
     <!-- Publish robot model for Sensor locations -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+        <param name="use_tf_static" value="true" />
+    </node>
 
     <!-- Publish world and odom as same thing until we get SLAM -->
     <!-- This is here so we can compare ground truth from sim to odom -->
