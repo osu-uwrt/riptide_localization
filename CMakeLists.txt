@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(riptide_navigation)
+project(riptide_localization)
 
 find_package(catkin REQUIRED)
 

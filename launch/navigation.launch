@@ -1,12 +1,12 @@
 <launch>
     <arg name="namespace" default="puddles" doc="Namespace of the vehicle"/>
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node">
-        <rosparam command="load" file="$(find riptide_navigation)/params/ekf_config.yaml" />
+        <rosparam command="load" file="$(find riptide_localization)/params/ekf_config.yaml" />
         <param name="base_link_frame" value="$(arg namespace)/base_link" />
         <param name="reset_on_time_jump" value="true" />
     </node>
-    <node pkg="riptide_navigation" name="dvl_converter" type="dvl_converter.py" />
-    <node pkg="riptide_navigation" name="depth_converter" type="depth_converter.py" />
+    <node pkg="riptide_localization" name="dvl_converter" type="dvl_converter.py" />
+    <node pkg="riptide_localization" name="depth_converter" type="depth_converter.py" />
     
     <!-- A joint state publisher -->
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen" />
