@@ -13,8 +13,8 @@ import numpy as np
 
 class depthConverter():
     def __init__(self):
-        self.sub = rospy.Subscriber("depth/raw", Depth, self.depthCb)
-        self.pub = rospy.Publisher("depth/pose", PoseWithCovarianceStamped, queue_size=10)
+        self.sub = rospy.Subscriber("depth/raw", Depth, self.depthCb, queue_size=1)
+        self.pub = rospy.Publisher("depth/pose", PoseWithCovarianceStamped, queue_size=1)
         self.namespace = rospy.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
