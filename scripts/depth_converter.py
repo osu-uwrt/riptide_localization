@@ -4,7 +4,7 @@ import rospy
 from sensor_msgs.msg import FluidPressure
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import Header
-from riptide_msgs.msg import Depth
+from riptide_hardware.msg import Depth
 import tf2_ros
 from tf.transformations import quaternion_multiply, unit_vector, vector_norm, quaternion_conjugate, quaternion_matrix
 from tf2_geometry_msgs import from_msg_msg
