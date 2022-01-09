@@ -22,13 +22,8 @@ def generate_launch_description():
         'params',
         'ekf_config.yaml'
     )
-    # <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node">
-    #     <rosparam command="load" file="$(find riptide_localization)/params/ekf_config.yaml" />
-    #     <param name="base_link_frame" value="$(arg namespace)/base_link" />
-    #     <param name="reset_on_time_jump" value="true" />
-    # </node>
-    return launch.LaunchDescription([
-        
+
+    return launch.LaunchDescription([        
         # start robot_localization Extended Kalman filter (EKF)
         launch_ros.actions.Node(
             package='robot_localization',
