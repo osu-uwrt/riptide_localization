@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import rospy
+import rclpy
 from geometry_msgs.msg import PoseWithCovarianceStamped, TwistWithCovarianceStamped
 from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
@@ -11,10 +11,10 @@ import math
 import numpy as np
 class dvlConverter():
     def __init__(self):
-        self.dvlSub = rospy.Subscriber("dvl_twist", TwistWithCovarianceStamped, self.dvlCb)
-        self.odomSub = rospy.Subscriber("odometry/filtered", Odometry, self.odomCb)
-        self.pub = rospy.Publisher("dvl/twist", TwistWithCovarianceStamped, queue_size=10)
-        self.namespace = rospy.get_namespace()[1:]
+        self.dvlSub = rclpy.Subscriber("dvl_twist", TwistWithCovarianceStamped, self.dvlCb, queue_size=1)
+        self.odomSub = rclpy.Subscriber("odometry/filtered", Odometry, self.odomCb, queue_size=1)
+        self.pub = rclpy.Publisher("dvl/twist", TwistWithCovarianceStamped, queue_size=1)
+        self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
         self.odomTwist = None
@@ -24,15 +24,15 @@ class dvlConverter():
 
     def dvlCb(self, msg):
         if self.odomTwist is None:
-            rospy.loginfo("Odometry not published yet")
+            rclpy.loginfo("Odometry not published yet")
             return
 
         twist = msg.twist.twist
         try:
             # Transform from dvl to base
-            d2bTransform = self.tfBuffer.lookup_transform(self.namespace+'base_link', self.namespace+'dvl_link', rospy.Time()).transform
+            d2bTransform = self.tfBuffer.lookup_transform(self.namespace+'base_link', self.namespace+'dvl_link', rclpy.Time()).transform
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-            rospy.loginfo(ex)
+            rclpy.loginfo(ex)
             return
 
         d2bRotation = d2bTransform.rotation
@@ -50,8 +50,11 @@ class dvlConverter():
         twist.linear.x, twist.linear.y, twist.linear.z = out_vel
         self.pub.publish(msg)
 
+def main(args=None):
+    rclpy.init(args=args)
+    node = dvlConverter()
+    rclpy.spin(node)
+
+
 if __name__ == '__main__':
-    rospy.init_node('dvl_converter')
-    dvlConverter()
-    rospy.spin()
-    
+    main()   
