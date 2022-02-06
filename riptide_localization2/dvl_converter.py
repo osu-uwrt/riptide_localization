@@ -18,7 +18,7 @@ class dvlConverter(Node):
         self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_system_default)
         self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_system_default)
 
-        self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_system_default)
+        self.pub = self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_system_default)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
