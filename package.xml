@@ -1,6 +1,4 @@
-<!-- IMPORTANT NOTE: You MUST install transforms3d via "pip install transforms3d," or else the converter nodes will not work-->
-
-<?xml version="1.0"?>
+<?xml version="1.0"?> <!-- IMPORTANT NOTE: You MUST install transforms3d via "pip install transforms3d," or else the converter nodes will not work-->
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>riptide_localization2</name>
