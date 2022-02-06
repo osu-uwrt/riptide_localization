@@ -25,7 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'depth_converter = riptide_localization2.depth_converter:main',
-            'dvl_converter = riptide_gazebo2.dvl_converter:main'
+            'dvl_converter = riptide_localization2.dvl_converter:main'
         ],
     },
 )

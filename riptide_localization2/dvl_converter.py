@@ -9,11 +9,13 @@ from tf.transformations import quaternion_multiply, unit_vector, vector_norm, qu
 from tf2_geometry_msgs import from_msg_msg
 import math
 import numpy as np
+
 class dvlConverter():
     def __init__(self):
-        self.dvlSub = rclpy.Subscriber("dvl_twist", TwistWithCovarianceStamped, self.dvlCb, queue_size=1)
-        self.odomSub = rclpy.Subscriber("odometry/filtered", Odometry, self.odomCb, queue_size=1)
-        self.pub = rclpy.Publisher("dvl/twist", TwistWithCovarianceStamped, queue_size=1)
+        self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_system_default) 
+        self.odomSub = self.create_subscription(Odometry, "dvl_twist", self.odomCb, qos_profile_system_default)
+
+        self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_system_default)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
