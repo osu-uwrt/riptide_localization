@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.node import Node
+from rclpy.qos import qos_profile_system_default
+from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import PoseWithCovarianceStamped, TwistWithCovarianceStamped
 from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
-import tf2_ros
-from tf.transformations import quaternion_multiply, unit_vector, vector_norm, quaternion_conjugate, quaternion_matrix
-from tf2_geometry_msgs import from_msg_msg
+from tf2_ros import *
 import math
+import transforms3d as tf3d
 import numpy as np
 
-class dvlConverter():
+class dvlConverter(Node):
     def __init__(self):
-        self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_system_default) 
-        self.odomSub = self.create_subscription(Odometry, "dvl_twist", self.odomCb, qos_profile_system_default)
+        super().__init__('riptide_localization2')
+        self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_system_default)
+        self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_system_default)
 
         self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_system_default)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
         self.odomTwist = None
 
     def odomCb(self, msg):
@@ -38,7 +41,7 @@ class dvlConverter():
             return
 
         d2bRotation = d2bTransform.rotation
-        d2bMatrix = quaternion_matrix([d2bRotation.x, d2bRotation.y, d2bRotation.z, d2bRotation.w])[:3,:3]
+        d2bMatrix = tf3d.quat2mat([d2bRotation.x, d2bRotation.y, d2bRotation.z, d2bRotation.w])[:3,:3]
         d2bOffset = d2bTransform.translation
         d2bVector = [d2bOffset.x, d2bOffset.y, d2bOffset.z]
 
