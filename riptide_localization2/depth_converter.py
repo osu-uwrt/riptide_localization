@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
 import rclpy
-import rclpy.node import Node
+from rclpy.node import Node
 from rclpy.qos import qos_profile_system_default
 from sensor_msgs.msg import FluidPressure
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import Header
 from riptide_hardware.msg import Depth
 import tf2_ros
-from tf.transformations import quaternion_multiply, unit_vector, vector_norm, quaternion_conjugate, quaternion_matrix
-from tf2_geometry_msgs import from_msg_msg
+import transforms3d as tf3d
 import math
 import numpy as np
 
@@ -27,7 +26,7 @@ class depthConverter(Node):
         try:
             # Rotation from base frame to odom
             b2oOrientation = self.tfBuffer.lookup_transform('odom', self.namespace+'base_link', rclpy.Time()).transform.rotation
-            b2oMatrix = quaternion_matrix([b2oOrientation.x, b2oOrientation.y, b2oOrientation.z, b2oOrientation.w])[:3,:3]
+            b2oMatrix = tf3d.quat2mat([b2oOrientation.x, b2oOrientation.y, b2oOrientation.z, b2oOrientation.w])[:3,:3]
 
             if self.b2pVector is None:
                 # Offset to pressure sensor
