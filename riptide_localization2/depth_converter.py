@@ -6,20 +6,20 @@ from rclpy.qos import qos_profile_system_default
 from sensor_msgs.msg import FluidPressure
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import Header
-from riptide_hardware.msg import Depth
+from riptide_msgs2.msg import Depth
 import tf2_ros
 import transforms3d as tf3d
 import math
 import numpy as np
 
 class depthConverter(Node):
-    super().__init__('riptide_localization2')
     def __init__(self):
+        super().__init__('riptide_localization2')
         self.sub = self.create_subscription(Depth, "depth/raw", self.depthCb, qos_profile_system_default)
         self.pub = self.create_publisher(PoseWithCovarianceStamped, "depth/pose", qos_profile_system_default)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
         self.b2pVector= None
 
     def depthCb(self, msg):
