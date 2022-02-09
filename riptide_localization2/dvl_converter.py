@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_system_default
+from rclpy.qos import qos_profile_sensor_data
 from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import PoseWithCovarianceStamped, TwistWithCovarianceStamped
 from std_msgs.msg import Header
@@ -15,10 +15,10 @@ import numpy as np
 class dvlConverter(Node):
     def __init__(self):
         super().__init__('riptide_localization2')
-        self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_system_default)
-        self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_system_default)
+        self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_sensor_data)
+        self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_sensor_data)
 
-        self.pub = self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_system_default)
+        self.pub = self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_sensor_data)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)

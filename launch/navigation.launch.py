@@ -25,6 +25,7 @@ def evaluate_xacro(context, *args, **kwargs):
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output = 'screen',
+        arguments=['--ros-args', '--log-level', 'WARN'],
         parameters=[
             {'robot_description': xacroData},
             {'use_tf_static': True}
@@ -64,6 +65,7 @@ def generate_launch_description():
             # type='ekf_localization_node',
             name='ekf_localization_node',
             output='screen',
+            #arguments=['--ros-args', '--log-level', 'DEBUG'],
             parameters=[config,
             {
                 'base_link_frame':  'puddles' + '/base_link/',
@@ -99,7 +101,7 @@ def generate_launch_description():
             name="odom_to_world_broadcaster",
             package="tf2_ros",
             executable="static_transform_publisher",
-            arguments=["0", "0", "0", "0", "0", "0", "1", "world", "odom", "100"]
+            arguments=["0", "0", "0", "0", "0", "0", "world", "odom"]
         )
 
     ])

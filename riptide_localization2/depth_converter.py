@@ -2,21 +2,19 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_system_default
-from sensor_msgs.msg import FluidPressure
+from rclpy.qos import qos_profile_sensor_data
+from rclpy.time import Time
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from std_msgs.msg import Header
 from riptide_msgs2.msg import Depth
 import tf2_ros
 import transforms3d as tf3d
-import math
 import numpy as np
 
 class depthConverter(Node):
     def __init__(self):
         super().__init__('riptide_localization2')
-        self.sub = self.create_subscription(Depth, "depth/raw", self.depthCb, qos_profile_system_default)
-        self.pub = self.create_publisher(PoseWithCovarianceStamped, "depth/pose", qos_profile_system_default)
+        self.sub = self.create_subscription(Depth, "depth/raw", self.depthCb, qos_profile_sensor_data)
+        self.pub = self.create_publisher(PoseWithCovarianceStamped, "depth/pose", qos_profile_sensor_data)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
@@ -25,15 +23,15 @@ class depthConverter(Node):
     def depthCb(self, msg):
         try:
             # Rotation from base frame to odom
-            b2oOrientation = self.tfBuffer.lookup_transform('odom', self.namespace+'base_link', rclpy.Time()).transform.rotation
+            b2oOrientation = self.tfBuffer.lookup_transform('odom', self.namespace+'/base_link', Time()).transform.rotation
             b2oMatrix = tf3d.quat2mat([b2oOrientation.x, b2oOrientation.y, b2oOrientation.z, b2oOrientation.w])[:3,:3]
 
             if self.b2pVector is None:
                 # Offset to pressure sensor
-                pressureOffset = self.tfBuffer.lookup_transform(self.namespace+'pressure_link', self.namespace+'base_link', rclpy.Time()).transform.translation
+                pressureOffset = self.tfBuffer.lookup_transform(self.namespace+'/pressure_link', self.namespace+'/base_link', Time()).transform.translation
                 self.b2pVector = [pressureOffset.x, pressureOffset.y, pressureOffset.z]
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-            rclpy.loginfo(ex)
+            self.get_logger().warning(str(ex))
             return
 
         # Rotate pressure sensor offset into odom frame and get additional depth from offset

@@ -14,7 +14,7 @@ ekf_localization_node:
     # vR vP vY
     # aX aY aZ
 
-    imu0: imu/data
+    imu0: imu/imu/data
     imu0_config: [false, false, false,
                   true,  true,  true,
                   false, false, false,
