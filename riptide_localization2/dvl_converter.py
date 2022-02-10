@@ -41,7 +41,7 @@ class dvlConverter(Node):
             return
 
         d2bRotation = d2bTransform.rotation
-        d2bMatrix = tf3d.quat2mat([d2bRotation.x, d2bRotation.y, d2bRotation.z, d2bRotation.w])[:3,:3]
+        d2bMatrix = tf3d.quaternions.quat2mat([d2bRotation.x, d2bRotation.y, d2bRotation.z, d2bRotation.w])[:3,:3]
         d2bOffset = d2bTransform.translation
         d2bVector = [d2bOffset.x, d2bOffset.y, d2bOffset.z]
 
