@@ -58,6 +58,15 @@ def generate_launch_description():
             description="enable xacro debug of the vehicle",
         ),
 
+             # Publish world and odom as same thing until we get SLAM
+        # This is here so we can compare ground truth from sim to odom
+        Node(
+            name="odom_to_world_broadcaster",
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            arguments=["0", "0", "0", "0", "0", "0", "world", "odom"]
+        ),
+
         # start robot_localization Extended Kalman filter (EKF)
         Node(
             package='robot_localization',
@@ -67,9 +76,7 @@ def generate_launch_description():
             output='screen',
             #arguments=['--ros-args', '--log-level', 'DEBUG'],
             parameters=[config,
-            {
-                'base_link_frame':  'puddles' + '/base_link/',
-                # 'base_link_frame':  'puddles' + '/base_link/',
+            {                
                 'reset_on_time_jump': True,
             }
             ]),
@@ -94,14 +101,5 @@ def generate_launch_description():
 
         # Publish robot model for Sensor locations
         OpaqueFunction(function=evaluate_xacro),
-
-        # Publish world and odom as same thing until we get SLAM
-        # This is here so we can compare ground truth from sim to odom
-        Node(
-            name="odom_to_world_broadcaster",
-            package="tf2_ros",
-            executable="static_transform_publisher",
-            arguments=["0", "0", "0", "0", "0", "0", "world", "odom"]
-        )
 
     ])
