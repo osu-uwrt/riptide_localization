@@ -2,6 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
+from rclpy.time import Time
 from rclpy.qos import qos_profile_sensor_data
 from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import PoseWithCovarianceStamped, TwistWithCovarianceStamped
@@ -29,15 +30,15 @@ class dvlConverter(Node):
 
     def dvlCb(self, msg):
         if self.odomTwist is None:
-            rclpy.loginfo("Odometry not published yet")
+            self.get_logger().warning("Odometry not published yet")
             return
 
         twist = msg.twist.twist
         try:
             # Transform from dvl to base
-            d2bTransform = self.tfBuffer.lookup_transform(self.namespace+'base_link', self.namespace+'dvl_link', rclpy.Time()).transform
+            d2bTransform = self.tfBuffer.lookup_transform(self.namespace+'/base_link', self.namespace+'/dvl_link', Time()).transform
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-            rclpy.loginfo(ex)
+            self.get_logger().info(str(ex))
             return
 
         d2bRotation = d2bTransform.rotation
@@ -51,7 +52,7 @@ class dvlConverter(Node):
         out_vel += np.cross(d2bVector, base_rot)
 
         # TODO: Rotate covariance
-        msg.header.frame_id = self.namespace+"base_link"
+        msg.header.frame_id = self.namespace+"/base_link"
         twist.linear.x, twist.linear.y, twist.linear.z = out_vel
         self.pub.publish(msg)
 
