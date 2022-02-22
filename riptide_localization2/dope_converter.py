@@ -16,13 +16,13 @@ class dopeConverter(Node):
     def __init__(self):
         super().__init__('riptide_localization2')
         
-        # TODO: check topic name
+        # TODO: check topic names
         # TODO: Read all dope objects
         self.cutieDriftSub = self.create_subscription(PoseWithCovarianceStamped, "cutieDrift/pose", self.cutieDriftCb, qos_profile_sensor_data)
         self.cutieSub = self.create_subscription(PoseWithCovarianceStamped, "{}mapping/cutie".format(self.get_namespace()), self.cutieCb, qos_profile_sensor_data)
         self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_sensor_data)
 
-        self.pub = self.create_publisher(PoseWithCovarianceStamped, "vision_pose", qos_profile_sensor_data)
+        self.pub = self.create_publisher(PoseWithCovarianceStamped, "odometry/drift_corrected", qos_profile_sensor_data)
         self.namespace = self.get_namespace()[1:]
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
@@ -50,12 +50,12 @@ class dopeConverter(Node):
         correctedOdom = relOdomPose
         # translation from the drifted cutie to mapping's accepted cutie positiion
         driftTranslation = self.cutiePose.position - driftedPose.position
-        driftRotation = tf3d.euler.quat2euler(self.cutiePose.rotation) - tf3d.euler.quat2euler(self.driftedPose.rotation) 
+        driftRotation = tf3d.quaternions.qmult(self.cutiePose.rotation, tf3d.quaternions.qinverse(driftedPose.rotation)) 
 
-        driftCorrectionMatrix = tf3d.affines.compose(driftTranslation, driftRotation)
+        driftCorrectionMatrix = tf3d.affines.compose(driftTranslation, tf3d.quaternions.quat2mat(driftRotation))
         # Transform the odometry pose relative to the corrected odom
         correctedOdom.position = np.dot(driftCorrectionMatrix, relOdomPose.position)
-        correctedOdom.rotation = tf3d.euler.euler2quat(tf3d.euler.quat2euler(relOdomPose.rotation) + driftRotation)
+        correctedOdom.rotation = tf3d.quaternions.qmult(relOdomPose.rotation, driftRotation)
         
         # Tranform corrected odom back to world
         correctedWorldOdom = self.tfBuffer.transform(odomPose, "world")
