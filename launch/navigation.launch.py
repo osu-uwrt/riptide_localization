@@ -48,7 +48,7 @@ def generate_launch_description():
         # Read in the vehicle's namespace through the command line or use the default value one is not provided
         DeclareLaunchArgument(
             "namespace", 
-            default_value="puddles",
+            default_value="tempest",
             description="Namespace of the vehicle",
         ),
 
