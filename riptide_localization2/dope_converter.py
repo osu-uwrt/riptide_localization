@@ -3,12 +3,10 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
-from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import Pose, PoseWithCovarianceStamped, TwistWithCovarianceStamped
 from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
 from tf2_ros import *
-import math
 import transforms3d as tf3d
 import numpy as np
 
@@ -61,11 +59,13 @@ class dopeConverter(Node):
         correctedWorldOdom = self.tfBuffer.transform(odomPose, "world")
 
         # Create corrected odom message
-        # TODO: Update covariance
-        pubMsg = self.odomPoseMsg
-
+        pubMsg = PoseWithCovarianceStamped()
         pubMsg.header.frame_id = "world"
+        pubMsg.header.stamp = Time().to_msg()
         pubMsg.pose.pose = correctedWorldOdom
+        # Currently covariance is the same as the error pose
+        # Maybe it should be different?
+        pubMsg.pose.covariance = self.odomPoseMsg.pose.covariance
         self.pub.publish(pubMsg)
 
 def main(args=None):
