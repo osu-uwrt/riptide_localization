@@ -48,12 +48,12 @@ class dopeConverter(Node):
         correctedOdom = relOdomPose
         # translation from the drifted cutie to mapping's accepted cutie positiion
         driftTranslation = self.cutiePose.position - driftedPose.position
-        driftRotation = tf3d.quaternions.qmult(self.cutiePose.rotation, tf3d.quaternions.qinverse(driftedPose.rotation)) 
+        driftRotation = tf3d.quaternions.qmult(xyzw_to_wxyz(self.cutiePose.rotation), tf3d.quaternions.qinverse(xyzw_to_wxyz(driftedPose.rotation))) 
 
         driftCorrectionMatrix = tf3d.affines.compose(driftTranslation, tf3d.quaternions.quat2mat(driftRotation))
         # Transform the odometry pose relative to the corrected odom
         correctedOdom.position = np.dot(driftCorrectionMatrix, relOdomPose.position)
-        correctedOdom.rotation = tf3d.quaternions.qmult(relOdomPose.rotation, driftRotation)
+        correctedOdom.rotation = wxzy_to_xyzw(tf3d.quaternions.qmult(relOdomPose.rotation, driftRotation))
         
         # Tranform corrected odom back to world
         correctedWorldOdom = self.tfBuffer.transform(odomPose, "world")
@@ -67,6 +67,14 @@ class dopeConverter(Node):
         # Maybe it should be different?
         pubMsg.pose.covariance = self.odomPoseMsg.pose.covariance
         self.pub.publish(pubMsg)
+
+def xyzw_to_wxyz(q):
+    x, y, z, w = q
+    return (w,x,y,z)
+
+def wxzy_to_xyzw(q):
+    w, x, y, z = q
+    return (x,y,z,w)
 
 def main(args=None):
     rclpy.init(args=args)
