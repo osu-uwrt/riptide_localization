@@ -31,7 +31,7 @@ class dopeConverter(Node):
         self.cutiePose = msg.pose.pose
 
     def odomCb(self, msg):
-        self.odomPoseMsg = msg.pose.pose
+        self.odomPoseMsg = msg
 
     def cutieDriftCb(self, msg):
         if self.odomPoseMsg is None:
