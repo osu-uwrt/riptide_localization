@@ -126,7 +126,37 @@ def wxzy_to_xyzw(q):
     return (x,y,z,w)
 
 def calculateAvgPos(self, msg):
-    #LOOP THROUGH ARRAY, GRAB COVARIANCES AND DO A WEIGHTED AVERAGE. ESTIMATE.PY DEF UPDATE_VALUE
+    for item in dictionary:
+        #get position of current item in view
+        msg_pose.position.x = item.pos.x
+        msg_pose.position.y = item.pos.y
+        msg_pose.position.z = item.pos.z
+
+        #get orientation of current item in view
+        msg_pose.orientation.w = item.ori.w
+        msg_pose.orientation.x = item.ori.x
+        msg_pose.orientation.y = item.ori.y
+        msg_pose.orientation.z = item.ori.z
+
+        #update position of self based on position of current item
+        self.pos[0], self.covariance[0] = self.update_value(self.pos[0], msg_pose.position.x, self.covariance[0], object_covaraince[0])
+        self.pos[1], self.covariance[1] = self.update_value(self.pos[1], msg_pose.position.y, self.covariance[1], object_covaraince[1])
+        self.pos[2], self.covariance[2] = self.update_value(self.pos[2], msg_pose.position.z, self.covariance[2], object_covaraince[2])
+        
+
+        #Define the roll pitch and yaw
+        msg_roll, msg_pitch, msg_yaw = euler.quat2euler([msg_pose.orientation.w, msg_pose.orientation.x, msg_pose.orientation.y, msg_pose.orientation.z], 'sxyz')
+        
+        #update roll pitch and yaw of self based on position of current item
+        msg_roll = self.constrain_angle(self.roll, msg_roll)
+        self.roll, self.covariance[3] = self.update_value(self.roll, msg_roll, self.covariance[3], object_covaraince[3])
+
+        msg_pitch = self.constrain_angle(self.pitch, msg_pitch)
+        self.pitch, self.covariance[4] = self.update_value(self.pitch, msg_pitch, self.covariance[4], object_covaraince[4])
+
+        msg_yaw = self.constrain_angle(self.yaw, msg_yaw)
+        self.yaw, self.covariance[5] = self.update_value(self.yaw, msg_yaw, self.covariance[5], object_covaraince[5])
+        
 
 def main(args=None):
     rclpy.init(args=args)
