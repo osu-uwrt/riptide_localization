@@ -116,8 +116,8 @@ class dopeConverter(Node):
         correctedOdomMsg = msg
         correctedOdomMsg.header.stamp = Time().to_msg()
         correctedOdomMsg.pose.pose = correctedWorldOdom
-        correctedOdomMsg.covariance = msg.pose.covariance
-        objects[k]["correctedOdomPub"].publish(correctedOdomPose)
+        correctedOdomMsg.covariance = msg.pose.covariance # TODO(hunter): Transform old covariance matrix
+        objects[k]["correctedOdomPub"].publish(correctedOdomMsg)
 
 # Utility functions, since tf3d doesn't offer ways to convert between quaternion representations :(
     def xyzw_to_wxyz(self, q):
