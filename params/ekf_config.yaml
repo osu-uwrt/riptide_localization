@@ -42,6 +42,48 @@
                   false, false, false,
                   false, false, false,
                   false, false, false]
+    
+    cutie_correction: drift_corrected_pose/cutie
+    cutie_correction_config:  [true,  true,   true,
+                              true,   true,   true,
+                              false,  false,  false,
+                              false,  false,  false,
+                              false,  false,  false,]
+
+    tommy_correction: drift_corrected_pose/tommy
+    tommy_correction_config:  [true,  true,   true,
+                              true,   true,   true,
+                              false,  false,  false,
+                              false,  false,  false,
+                              false,  false,  false,]
+    
+    gman_correction: drift_corrected_pose/gman
+    gman_correction_config:  [true,   true,   true,
+                              true,   true,   true,
+                              false,  false,  false,
+                              false,  false,  false,
+                              false,  false,  false,]
+    
+    bootlegger_correction: drift_corrected_pose/bootlegger
+    bootlegger_correction_config:  [true,  true,   true,
+                                    true,   true,   true,
+                                    false,  false,  false,
+                                    false,  false,  false,
+                                    false,  false,  false,]
+    
+    badge_correction: drift_corrected_pose/badge
+    badge_correction_config: [true,   true,   true,
+                              true,   true,   true,
+                              false,  false,  false,
+                              false,  false,  false,
+                              false,  false,  false,]
+    
+    gate_correction: drift_corrected_pose/gate
+    gate_correction_config: [true,   true,   true,
+                              true,   true,   true,
+                              false,  false,  false,
+                              false,  false,  false,
+                              false,  false,  false,]
 
 
     # This covariance was not calculated. This is just default with low XYZ noise
