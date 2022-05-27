@@ -101,7 +101,7 @@ class dopeConverter(Node):
         correctedOdom = relOdomPose
         # Find difference between drifted object detection to mapping's accepted position of the object
         driftTranslation = objects[k]["mappingPose"].position - driftedPose.position
-        driftRotation = tf3d.quaternions.qmult(self.xyzw_to_wxyz(objects[k]["mappingPose"].rotation), tf3d.quaternions.qinverse(self.xyzw_to_wxyz(driftedPose.rotation))) 
+        driftRotation = tf3d.quaternions.qnorm(tf3d.quaternions.qmult(self.xyzw_to_wxyz(objects[k]["mappingPose"].rotation), tf3d.quaternions.qinverse(self.xyzw_to_wxyz(driftedPose.rotation))))
 
         driftCorrectionMatrix = tf3d.affines.compose(driftTranslation, tf3d.quaternions.quat2mat(driftRotation))
         # Transform the odometry pose relative to the corrected odom
