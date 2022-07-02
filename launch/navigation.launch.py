@@ -19,6 +19,9 @@ def evaluate_xacro(context, *args, **kwargs):
     ]).perform(context)
 
     xacroData = xacro.process_file(modelPath,  mappings={'debug': debug, 'namespace': robot, 'inertial_reference_frame':'world'}).toxml()
+    
+    with open('/tmp/model.urdf', 'w') as urdf_file:
+        urdf_file.write(xacroData)
 
     robot_state_publisher = Node(
         name = 'robot_state_publisher',
@@ -31,9 +34,16 @@ def evaluate_xacro(context, *args, **kwargs):
             {'use_tf_static': True}
             ], # Use subst here
     )
+    
+    joint_state = Node(
+        name="joint_state_publisher",
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        output="screen",
+        arguments=['/tmp/model.urdf']
+    )
 
-
-    return [robot_state_publisher]
+    return [robot_state_publisher, joint_state]
 
 def generate_launch_description():
 
@@ -89,14 +99,6 @@ def generate_launch_description():
             package='riptide_localization2',
             executable='depth_converter',
             name='depth_converter',
-        ),
-
-        # A joint state publisher
-        Node(
-            name="joint_state_publisher",
-            package="joint_state_publisher",
-            executable="joint_state_publisher",
-            output="screen"
         ),
 
         # Publish robot model for Sensor locations
