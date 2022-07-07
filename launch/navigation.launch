@@ -1,5 +1,5 @@
 <launch>
-    <arg name="namespace" default="puddles" doc="Namespace of the vehicle"/>
+    <arg name="namespace" default="tempest" doc="Namespace of the vehicle"/>
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node">
         <rosparam command="load" file="$(find riptide_localization)/params/ekf_config.yaml" />
         <param name="base_link_frame" value="$(arg namespace)/base_link" />
