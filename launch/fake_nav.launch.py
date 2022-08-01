@@ -76,20 +76,27 @@ def generate_launch_description():
             executable="static_transform_publisher",
             arguments=["0", "0", "0", "0", "0", "0", "world", "odom"]
         ),
+        
+        Node(
+            name="odom_to_tempest",
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            arguments=["0", "0", "0", "1.507", "0", "0", "odom", "tempest/base_link"]
+        ),
 
         # start robot_localization Extended Kalman filter (EKF)
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            # type='ekf_localization_node',
-            name='ekf_localization_node',
-            output='screen',
-            #arguments=['--ros-args', '--log-level', 'DEBUG'],
-            parameters=[config,
-            {                
-                'reset_on_time_jump': True,
-            }
-            ]),
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     # type='ekf_localization_node',
+        #     name='ekf_localization_node',
+        #     output='screen',
+        #     #arguments=['--ros-args', '--log-level', 'DEBUG'],
+        #     parameters=[config,
+        #     {                
+        #         'reset_on_time_jump': True,
+        #     }
+        #     ]),
         # Publish robot model for Sensor locations
         OpaqueFunction(function=evaluate_xacro),
 
