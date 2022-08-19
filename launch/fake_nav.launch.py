@@ -1,5 +1,6 @@
 import launch
 import launch.actions
+from launch.actions import ExecuteProcess
 from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration as LC
 import os
@@ -81,8 +82,20 @@ def generate_launch_description():
             name="odom_to_tempest",
             package="tf2_ros",
             executable="static_transform_publisher",
-            arguments=["0", "0", "0", "1.507", "0", "0", "odom", "tempest/base_link"]
+            arguments=["0", "0", "0", "0", "0", "0", "odom", "tempest/base_link"]
         ),
+        
+        Node(
+            name="odom_to_tempest",
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            arguments=["0", "0", "0", "0", "0", "0", "odom", "tempest/base_link"]
+        ),
+        
+        ExecuteProcess(cmd=[
+            'ros2', 'topic', 'pub', '/tempest/odometry/filtered', 'nav_msgs/msg/Odometry'   
+        ]),
+        
 
         # start robot_localization Extended Kalman filter (EKF)
         # Node(
