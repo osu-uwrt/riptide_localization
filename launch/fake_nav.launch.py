@@ -7,6 +7,7 @@ import os
 import xacro
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction
 from launch_ros.actions import Node
+import traceback
 
 # evaluates LaunchConfigurations in context for use with xacro.process_file(). Returns a list of launch actions to be included in launch description
 def evaluate_xacro(context, *args, **kwargs):
@@ -18,33 +19,43 @@ def evaluate_xacro(context, *args, **kwargs):
         'robots',
         robot + '.xacro'
     ]).perform(context)
-
-    xacroData = xacro.process_file(modelPath,  mappings={'debug': debug, 'namespace': robot, 'inertial_reference_frame':'world'}).toxml()
     
-    with open('/tmp/model.urdf', 'w') as urdf_file:
-        urdf_file.write(xacroData)
+    try:
+        xacroData = xacro.process_file(modelPath,  mappings={'debug': debug, 'namespace': robot, 'inertial_reference_frame':'world'}).toxml()
 
-    robot_state_publisher = Node(
-        name = 'robot_state_publisher',
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output = 'screen',
-        arguments=['--ros-args', '--log-level', 'WARN'],
-        parameters=[
-            {'robot_description': xacroData},
-            {'use_tf_static': True}
-            ], # Use subst here
-    )
-    
-    joint_state = Node(
-        name="joint_state_publisher",
-        package="joint_state_publisher",
-        executable="joint_state_publisher",
-        output="screen",
-        arguments=['/tmp/model.urdf']
-    )
+        robot_state_publisher = Node(
+            name = 'robot_state_publisher',
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            output = 'screen',
+            arguments=['--ros-args', '--log-level', 'WARN'],
+            parameters=[
+                {'robot_description': xacroData},
+                {'use_tf_static': True}
+                ], # Use subst here
+        )
+        
+        with open('/tmp/model.urdf', 'w') as urdf_file:
+            urdf_file.write(xacroData)
+        
+        joint_state = Node(
+            name="joint_state_publisher",
+            package="joint_state_publisher",
+            executable="joint_state_publisher",
+            output="screen",
+            arguments=['/tmp/model.urdf']
+        )
+        
+        return [robot_state_publisher, joint_state]
+    except Exception as ex:
+        print()
+        print("---------------------------------------------")
+        print("COULD NOT OPEN ROBOT DESCRIPTION XACRO FILE")
+        traceback.print_exc()
+        print("---------------------------------------------")
+        print()
 
-    return [robot_state_publisher, joint_state]
+    return []
 
 def generate_launch_description():
 
