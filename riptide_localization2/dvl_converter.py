@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.time import Time
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import PoseWithCovarianceStamped, TwistWithCovarianceStamped
 from std_msgs.msg import Header
@@ -18,6 +18,7 @@ class dvlConverter(Node):
         super().__init__('riptide_localization2')
         self.dvlSub = self.create_subscription(TwistWithCovarianceStamped, "dvl_twist", self.dvlCb, qos_profile_sensor_data)
         self.odomSub = self.create_subscription(Odometry, "odometry/filtered", self.odomCb, qos_profile_sensor_data)
+        self.simTwistSub = self.create_subscription(Odometry, "simulation/twist", self.simTwistCb, qos_profile_system_default)
 
         self.pub = self.create_publisher(TwistWithCovarianceStamped, "dvl/twist", qos_profile_sensor_data)
         self.namespace = self.get_namespace()[1:]
@@ -26,6 +27,9 @@ class dvlConverter(Node):
         self.odomTwist = None
 
     def odomCb(self, msg):
+        self.odomTwist = msg.twist.twist
+
+    def simTwistCb(self, msg):
         self.odomTwist = msg.twist.twist
 
     def dvlCb(self, msg):
