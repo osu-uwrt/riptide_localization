@@ -101,16 +101,16 @@ def generate_launch_description():
                 'reset_on_time_jump': True,
             }
             ]),
-        Node(
-            package='riptide_localization2',
-            executable='dvl_converter',
-            name='dvl_converter',
-        ),
-        Node(
-            package='riptide_localization2',
-            executable='depth_converter',
-            name='depth_converter',
-        ),
+        # Node(
+        #     package='riptide_localization2',
+        #     executable='dvl_converter',
+        #     name='dvl_converter',
+        # ),
+        # Node(
+        #     package='riptide_localization2',
+        #     executable='depth_converter',
+        #     name='depth_converter',
+        # ),
 
         # Publish robot model for Sensor locations
         OpaqueFunction(function=evaluate_xacro),

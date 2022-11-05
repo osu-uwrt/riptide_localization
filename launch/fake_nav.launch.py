@@ -1,12 +1,11 @@
 import launch
-import launch.actions
-from launch.actions import ExecuteProcess
 from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration as LC
 import os
 import xacro
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction
-from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.conditions import IfCondition
+from launch_ros.actions import Node, PushRosNamespace
 import traceback
 
 # evaluates LaunchConfigurations in context for use with xacro.process_file(). Returns a list of launch actions to be included in launch description
@@ -80,6 +79,18 @@ def generate_launch_description():
             description="enable xacro debug of the vehicle",
         ),
 
+        DeclareLaunchArgument(
+            "apply_namespace",
+            default_value="False",
+            description="Override the vehicle namespace when not included"
+        ),
+        
+        PushRosNamespace(
+            LC("namespace"),
+            condition=IfCondition(LC('apply_namespace'))
+        ),
+
+
              # Publish world and odom as same thing until we get SLAM
         # This is here so we can compare ground truth from sim to odom
         Node(
@@ -97,30 +108,12 @@ def generate_launch_description():
         ),
         
         Node(
-            name="odom_to_tempest",
-            package="tf2_ros",
-            executable="static_transform_publisher",
-            arguments=["0", "0", "0", "0", "0", "0", "odom", "tempest/base_link"]
+            name="fake_ekf",
+            package="riptide_localization2",
+            executable="fake_ekf",
         ),
         
-        ExecuteProcess(cmd=[
-            'ros2', 'topic', 'pub', '/tempest/odometry/filtered', 'nav_msgs/msg/Odometry'   
-        ]),
         
-
-        # start robot_localization Extended Kalman filter (EKF)
-        # Node(
-        #     package='robot_localization',
-        #     executable='ekf_node',
-        #     # type='ekf_localization_node',
-        #     name='ekf_localization_node',
-        #     output='screen',
-        #     #arguments=['--ros-args', '--log-level', 'DEBUG'],
-        #     parameters=[config,
-        #     {                
-        #         'reset_on_time_jump': True,
-        #     }
-        #     ]),
         # Publish robot model for Sensor locations
         OpaqueFunction(function=evaluate_xacro),
 
