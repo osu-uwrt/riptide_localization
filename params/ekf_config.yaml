@@ -17,7 +17,7 @@
     # vR vP vY
     # aX aY aZ
 
-    imu0: imu/imu/data
+    imu0: vectornav/imu
     imu0_config: [false, false, false,
                   true,  true,  true,
                   false, false, false,
@@ -29,7 +29,7 @@
     imu0_remove_gravitational_acceleration: true
     gravitational_acceleration: 9.81604
 
-    twist0: dvl/twist
+    twist0: dvl_twist
     twist0_config: [false, false, false,
                     false, false, false,
                     true,  true,  true,

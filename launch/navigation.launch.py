@@ -103,11 +103,6 @@ def generate_launch_description():
             ]),
         Node(
             package='riptide_localization2',
-            executable='dvl_converter',
-            name='dvl_converter',
-        ),
-        Node(
-            package='riptide_localization2',
             executable='depth_converter',
             name='depth_converter',
         ),
