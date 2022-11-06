@@ -108,9 +108,10 @@ def generate_launch_description():
         ),
         
         Node(
-            name="fake_ekf",
+            name="fake_ekf_node",
             package="riptide_localization2",
             executable="fake_ekf",
+            output='screen',
         ),
         
         
